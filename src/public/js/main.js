@@ -1,5 +1,5 @@
 $(function () {
-    
+
     const socket = io();
 
     // obtaining DOM element from the interface
@@ -34,7 +34,9 @@ $(function () {
     // events
     $menssageForm.submit(e => {
         e.preventDefault();
-        socket.emit('send message', $menssageBox.val());
+        socket.emit('send message', $menssageBox.val(), data => {
+            $chat.append(`<p class="text-danger">${data}</p>`);
+        });
         $menssageBox.val('');
     });
 
@@ -42,11 +44,25 @@ $(function () {
         $chat.append('<b>' + data.nick + '</b>: ' + data.msg + '<br/>')
     });
 
-    socket.on('usernames', data => {        
+    socket.on('usernames', data => {
         let html = '';
         for (let i = 0; i < data.length; i++) {
             html += `<p><i class="fa-regular fa-user"></i> ${data[i]}</p>`
         }
         $users.html(html);
     });
+
+    socket.on('whisper', data => {
+        displayMsg(data)
+    });
+
+    socket.on('load old msgs', msgs => {
+        for (let i = 0; i < msgs.length; i++) {
+            displayMsg(msgs[i]);
+        }
+    });
+
+    function displayMsg(data) {
+        $chat.append(`<p class="whisper"><b>${data.nick}:</b> ${data.msg}</p>`);
+    }
 })

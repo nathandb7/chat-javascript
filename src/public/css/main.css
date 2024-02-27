@@ -9,3 +9,8 @@ body {
 #contentWrap {
     display: none;
 }
+
+.whisper {
+    color: gray;
+    font-style: italic;
+}
