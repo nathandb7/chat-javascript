@@ -1,6 +1,6 @@
 [build]
   command = "npm install"
-  publish = "public"  # Ajusta esto según el directorio donde se encuentra tu aplicación
+  publish = "src/public"
 
 [[plugins]]
   package = "netlify-plugin-inline-functions"
