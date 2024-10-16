@@ -67,21 +67,22 @@ If you want to change the port, modify the PORT in your .env file or directly in
 
 ### File Structure
 
-live-chat-js/
-│
-├── src/                      # Source code
-│   ├── public/               # Public assets (CSS, JS, HTML)
-│   │   ├── css/              # Custom stylesheets
-│   │   ├── js/               # Client-side JavaScript (main.js)
-│   │   └── index.html        # Chat interface
-│   ├── models/               # Database models
-│   │   └── Chat.js           # Mongoose schema for chat messages
-│   ├── sockets.js            # Socket.IO event handling (server-side)
-│   └── app.js                # Express server setup
-│
-├── .env                      # Environment variables (MongoDB credentials)
-├── package.json              # Dependencies and scripts
-└── README.md                 # Documentation
+    ```
+    live-chat-js/
+    │
+    ├── src/                      # Source code
+    │   ├── public/               # Public assets (CSS, JS, HTML)
+    │   │   ├── css/              # Custom stylesheets
+    │   │   ├── js/               # Client-side JavaScript (main.js)
+    │   │   └── index.html        # Chat interface
+    │   ├── models/               # Database models
+    │   │   └── Chat.js           # Mongoose schema for chat messages
+    │   ├── sockets.js            # Socket.IO event handling (server-side)
+    │   └── app.js                # Express server setup
+    │
+    ├── .env                      # Environment variables (MongoDB credentials)
+    ├── package.json              # Dependencies and scripts
+    └── README.md                 # Documentation
 
 Built With
 
