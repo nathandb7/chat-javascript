@@ -27,7 +27,7 @@ This project was inspired and developed following tutorials by **Fazt** on [YouT
 
    ```
    git clone https://github.com/nathandb7/chat-javascript.git
-   cd live-chat-js
+   cd chat-javascript
 2. **Install dependencies:**
 
 Inside the project directory, run:
