@@ -148,6 +148,10 @@ $(function () {
     // ------- Sockets in --------
     socket.on('new message', function (data) {
       const self = (currentNick && data && data.nick && data.nick.toLowerCase() === currentNick.toLowerCase());
+  
+      // Evito duplicar: si ya lo mostré como "self" al enviar, no vuelvo a renderizar el eco del servidor
+      if (self) return;
+  
       $chat.append(
         bubbleHtml({ nick: data.nick, msg: data.msg, self })
       );
