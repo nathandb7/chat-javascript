@@ -1,11 +1,5 @@
-/* Mantengo esto para ocultar el chat hasta que se loguee el usuario */
-#contentWrap {
-    display: none;
-  }
-  
-  /* Estilo base para mensajes tipo whisper (susurros) */
-  .whisper {
+/* Estilo base para mensajes tipo whisper (si en algún momento los usás con clase) */
+.whisper {
     color: gray;
     font-style: italic;
   }
-  

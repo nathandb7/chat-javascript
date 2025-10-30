@@ -83,7 +83,7 @@ async function connectDbWithRetry(retry = 0) {
   try {
     await mongoose.connect(MONGODB_URI, {
       serverSelectionTimeoutMS: 8000, // evito colgarme esperando el cluster
-      dbName: process.env.MONGODB_DBNAME || 'chat-javascript', // <<< AQUI especifico base por defecto
+      dbName: process.env.MONGODB_DBNAME || 'chat-javascript', // base por defecto
     });
     console.log('db is connected');
     mongoose.connection.on('connected', () => console.log('mongoose connected'));

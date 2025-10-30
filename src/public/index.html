@@ -17,9 +17,7 @@
 
   <style>
     /* Ajustes menores para scroll suave en el contenedor del chat */
-    #chat {
-      scroll-behavior: smooth;
-    }
+    #chat { scroll-behavior: smooth; }
   </style>
 </head>
 <body class="h-full bg-gradient-to-br from-slate-50 to-slate-100 text-slate-800 antialiased dark:from-slate-900 dark:to-slate-950 dark:text-slate-100">
@@ -71,13 +69,7 @@
           </div>
 
           <!-- Chat scroll -->
-          <div id="chat" class="h-[48vh] overflow-y-auto px-5 py-4">
-            <!-- Los mensajes se inyectan aquí por JS -->
-            <!-- Tip: podés aplicar bubbles desde main.js con clases:
-                 - self: 'ml-auto max-w-[85%] rounded-2xl bg-amber-500 text-white px-3 py-2 mb-2 w-fit'
-                 - other: 'mr-auto max-w-[85%] rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 mb-2 w-fit'
-            -->
-          </div>
+          <div id="chat" class="h-[48vh] overflow-y-auto px-5 py-4"></div>
 
           <!-- Form de mensaje -->
           <form id="message-form" class="border-t border-slate-200 p-4 dark:border-slate-800">
@@ -106,14 +98,7 @@
             <h3 class="text-lg font-semibold tracking-tight">Users</h3>
           </div>
           <div class="px-5 py-4">
-            <div id="usernames" class="space-y-2 text-sm">
-              <!-- Lista de usuarios se inyecta por JS -->
-              <!-- Sugerencia de chip por usuario:
-                   <span class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                     <i class="fa-regular fa-user"></i> nathan
-                   </span>
-              -->
-            </div>
+            <div id="usernames" class="space-y-2 text-sm"></div>
           </div>
         </div>
       </aside>

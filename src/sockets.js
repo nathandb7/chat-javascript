@@ -1,4 +1,4 @@
-// sockets.js
+// src/sockets.js
 // Módulo de sockets. Manejo de usuarios conectados, chat público y susurros (/w).
 // Agrego validaciones, orden correcto de históricos, control simple de flood
 // y manejo de errores para que no tumbe el proceso si falla la DB.
@@ -18,7 +18,7 @@ function isValidNickname(name) {
   if (typeof name !== 'string') return false;
   const n = name.trim();
   if (n.length < 3 || n.length > 20) return false;
-  // Letras, números, guión bajo y puntos; ajusto si necesito otros caracteres
+  // Letras, números, guión bajo, puntos y guiones
   return /^[a-zA-Z0-9._-]+$/.test(n);
 }
 
@@ -55,9 +55,8 @@ module.exports = function (io) {
 
     // Cargo últimos N mensajes en orden cronológico (viejos -> nuevos)
     try {
-      // Intento ordenar por createdAt si existe; si no, _id como aproximación
       const messages = await Chat.find({})
-        .sort({ createdAt: -1, _id: -1 })
+        .sort({ created_at: -1, _id: -1 })
         .limit(50)
         .lean();
 
@@ -82,7 +81,6 @@ module.exports = function (io) {
         return;
       }
 
-      // Guardo en socket y en el mapa global
       socket.nickname = displayName;
       socket.nicknameKey = key;
       users.set(key, { socket, displayName });
@@ -99,7 +97,6 @@ module.exports = function (io) {
           return;
         }
 
-        // Anti-flood muy básico para evitar spam
         if (!canSendNow(socket)) {
           if (typeof cb === 'function') cb('Estás enviando muy rápido, esperá un momento');
           return;
@@ -140,7 +137,6 @@ module.exports = function (io) {
           }
 
           const target = users.get(targetKey);
-          // Emisión solo al destinatario
           target.socket.emit('whisper', {
             msg: content,
             nick: socket.nickname,
@@ -179,7 +175,6 @@ module.exports = function (io) {
     // Desconexión
     socket.on('disconnect', () => {
       if (!socket.nicknameKey) return;
-      // Si el mapa aún tiene al usuario con ese socket, lo borro
       const user = users.get(socket.nicknameKey);
       if (user && user.socket.id === socket.id) {
         users.delete(socket.nicknameKey);

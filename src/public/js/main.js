@@ -1,3 +1,4 @@
+// public/js/main.js
 $(function () {
     const socket = io();
   
@@ -93,8 +94,9 @@ $(function () {
       socket.emit('new user', name, (ok, message) => {
         if (ok) {
           currentNick = name; // guardo mi nick para distinguir burbujas
-          $('#nickWrap').addClass('hidden');
-          $('#contentWrap').removeClass('hidden');
+          // tolero tanto CSS como clases Tailwind
+          $('#nickWrap').addClass('hidden').hide();
+          $('#contentWrap').removeClass('hidden').show();
   
           // limpio error si había
           $nickError.empty();
@@ -131,7 +133,7 @@ $(function () {
           $chat.append(systemHtml(err, 'error'));
           scrollToBottom();
         }
-        // si no hay error, renderizo mi propio mensaje localmente (el server también emite, pero esto da sensación de inmediatez)
+        // si no hay error, renderizo mi propio mensaje localmente (el server también emite)
         if (!err) {
           $chat.append(
             bubbleHtml({ nick: currentNick || 'me', msg: text, self: true })
@@ -146,8 +148,6 @@ $(function () {
     // ------- Sockets in --------
     socket.on('new message', function (data) {
       const self = (currentNick && data && data.nick && data.nick.toLowerCase() === currentNick.toLowerCase());
-      // si ya lo mostré como self por optimismo, igual puedo volver a mostrar;
-      // si no querés duplicar, podrías saltarte si self==true.
       $chat.append(
         bubbleHtml({ nick: data.nick, msg: data.msg, self })
       );
