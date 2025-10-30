@@ -14,9 +14,9 @@ const server = http.createServer(app);
 // Configuro CORS básico para API y Socket.IO; en producción puedo setear CLIENT_ORIGIN
 const ORIGIN = process.env.CLIENT_ORIGIN || '*';
 
-// Middleware mínimo y CORS simple
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Middlewares mínimos (limito payloads para evitar abusos) y CORS simple
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', ORIGIN);
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
@@ -25,21 +25,27 @@ app.use((req, res, next) => {
   next();
 });
 
+// Sirvo archivos estáticos desde /public (primero, para que / cargue el index.html)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Ruta explícita para la home: garantizo que / devuelva el index.html del frontend
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Ruta de healthcheck; Render la usa para verificar que el servicio está operativo
+app.get('/health', (_req, res) => {
+  res.status(200).json({ ok: true, service: 'chat-javascript', uptime: process.uptime() });
+});
+
 // Inicializo Socket.IO sobre el mismo server HTTP
 const io = new Server(server, {
   cors: { origin: ORIGIN, methods: ['GET', 'POST'] },
+  // pingInterval y pingTimeout por defecto funcionan bien en Render
 });
 
 // Enlazo mis eventos de sockets (archivo existente en el proyecto)
 require('./sockets')(io);
-
-// Ruta de healthcheck; Render la usa para verificar que el servicio está operativo
-app.get('/', (_req, res) => {
-  res.status(200).json({ ok: true, service: 'chat-javascript', uptime: process.uptime() });
-});
-
-// Sirvo archivos estáticos desde /public
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Puerto: Render define PORT; local uso 3000 por defecto
 const PORT = process.env.PORT || 3000;
