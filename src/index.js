@@ -38,10 +38,21 @@ app.get('/health', (_req, res) => {
   res.status(200).json({ ok: true, service: 'chat-javascript', uptime: process.uptime() });
 });
 
+// (Opcional) Diagnóstico rápido de DB
+app.get('/diag/db', async (_req, res) => {
+  try {
+    const state = mongoose.connection.readyState; // 0=disconnected,1=connected,2=connecting,3=disconnecting
+    if (state !== 1) return res.status(503).json({ ok: false, state, note: 'mongoose no está connected' });
+    await mongoose.connection.db.admin().ping();
+    res.json({ ok: true, state, note: 'ping ok' });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e?.message || String(e) });
+  }
+});
+
 // Inicializo Socket.IO sobre el mismo server HTTP
 const io = new Server(server, {
   cors: { origin: ORIGIN, methods: ['GET', 'POST'] },
-  // pingInterval y pingTimeout por defecto funcionan bien en Render
 });
 
 // Enlazo mis eventos de sockets (archivo existente en el proyecto)
@@ -50,11 +61,10 @@ require('./sockets')(io);
 // Puerto: Render define PORT; local uso 3000 por defecto
 const PORT = process.env.PORT || 3000;
 
-// Conexión a MongoDB: no bloqueo el arranque del servidor.
-// Intento conectar con timeout y reintentos para evitar 502 si Atlas no responde al toque.
+// Conexión a MongoDB
 const password = process.env.DB_PASSWORD;
 const FALLBACK_URI = password
-  ? `mongodb+srv://admin:${password}@chat-database.i36q0ix.mongodb.net/?retryWrites=true&w=majority&appName=chat-database`
+  ? `mongodb+srv://admin:${encodeURIComponent(password)}@chat-database.i36q0ix.mongodb.net/?retryWrites=true&w=majority&appName=chat-database`
   : '';
 const MONGODB_URI = process.env.MONGODB_URI || FALLBACK_URI;
 
@@ -73,9 +83,12 @@ async function connectDbWithRetry(retry = 0) {
   try {
     await mongoose.connect(MONGODB_URI, {
       serverSelectionTimeoutMS: 8000, // evito colgarme esperando el cluster
-      // dbName: process.env.MONGODB_DBNAME || undefined, // si necesito db específica, la seteo acá
+      dbName: process.env.MONGODB_DBNAME || 'chat-javascript', // <<< AQUI especifico base por defecto
     });
     console.log('db is connected');
+    mongoose.connection.on('connected', () => console.log('mongoose connected'));
+    mongoose.connection.on('error', (err) => console.error('mongoose error:', err.message));
+    mongoose.connection.on('disconnected', () => console.warn('mongoose disconnected'));
   } catch (err) {
     console.error(`Fallo conectando a Mongo (intento ${retry + 1}): ${err.message}`);
     if (retry < 5) {
